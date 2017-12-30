@@ -66,19 +66,18 @@ replace stateRPP= 98.3 if statefip==55
 replace stateRPP= 102.0 if statefip==56
 
 
-gen inctotRPP = 100*(inctot/stateRPP)
+gen inctotRPP = 100*(inctot/stateRPP) // price corrected income
 
-pctile inc_pt = inctot, nquantiles(10)
-pctile incRPP_pt = inctotRPP, nquantiles(10)
+pctile inc_pt = inctot, nquantiles(10) // national income decile thresholds
+pctile incRPP_pt = inctotRPP, nquantiles(10) // national corrected income deciles thresholds
 
-gen bottom_ten = inctot<= inc_pt[1]
-gen top_ten = inctot>= inc_pt[9]
-gen bottomRPP_ten = inctotRPP<= incRPP_pt[1]
-gen topRPP_ten = inctotRPP>= incRPP_pt[9]
-tab statefip
-tab statefip if bottom_ten==1
-tab statefip if bottomRPP_ten==1
-*collapse inctot inctotRPP ,by(statefip)
-*correlate inctot inctotRPP
+gen bottom_ten = inctot<= inc_pt[1] // indicates if individual is in national bottom decile
+gen top_ten = inctot>= inc_pt[9] // indicates if individual is in national top decile
+gen bottomRPP_ten = inctotRPP<= incRPP_pt[1] // indicates if individual is in national corrected bottom decile
+gen topRPP_ten = inctotRPP>= incRPP_pt[9]  // indicates if individual is in national corrected top decile
+
+*outsheet using RegionalInequality.csv, comma //deprecated
+export delimited using RegionalInequality.csv, delimiter(",") replace
+
 
 
